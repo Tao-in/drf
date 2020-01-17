@@ -1,3 +1,4 @@
 .idea
 *.py[cod]
 migrations
+#.gitignore是git的忽略文件：.idea是pycharm的配置项；*.py[cod]是py的缓存文件
