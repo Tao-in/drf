@@ -17,15 +17,11 @@ class BookListView(View):
     #获取所有的书籍
     def get(self,request):
         books = BookInfo.objects.all()
-        print(books)
-        book_list=[]
-        for book in books:
-            #创建序列化器
-            serializer=BookInfoSerializer(book)
 
-            #获取序列化的数据,serializer.data 是字典类型
-            book_list.append(serializer.data)
-        return JsonResponse(book_list,safe=False)#如果返回是列表需要设置safe参数为false
+        #序列化多个对象,序列化多个对象时要设置many为True
+        serializer=BookInfoSerializer(books,many=True)
+        #序列化多个对象时，serializer.data 为列表，里面元素为字典
+        return JsonResponse(serializer.data,safe=False)#如果返回是列表需要设置safe参数为false
 
 
 
