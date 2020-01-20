@@ -3,6 +3,7 @@ import json
 from django.http import JsonResponse, HttpResponse
 from django.views import View
 
+from .serializers import BookInfoSerializer
 from .models import BookInfo
 
 '''
@@ -19,15 +20,11 @@ class BookListView(View):
         print(books)
         book_list=[]
         for book in books:
-            book_dict={
-                'id':book.id,
-                'btitle':book.btitle,
-                'bpub_date ':book.bpub_date ,
-                'bread':book.bread,
-                'bcomment':book.bcomment
+            #创建序列化器
+            serializer=BookInfoSerializer(book)
 
-            }
-            book_list.append(book_dict)
+            #获取序列化的数据,serializer.data 是字典类型
+            book_list.append(serializer.data)
         return JsonResponse(book_list,safe=False)#如果返回是列表需要设置safe参数为false
 
 
