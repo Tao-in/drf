@@ -2,6 +2,7 @@ import json
 
 from django.http import JsonResponse, HttpResponse
 from django.views import View
+from .serializers import *
 
 from .models import BookInfo
 
@@ -35,13 +36,22 @@ class BookListView(View):
         # 新增一本书籍
     def post(self,request):
         #获取参数
-        json_bytes = request.body
-        json_str = json_bytes.decode('utf-8')
-        book_dict = json.loads(json_str)
-        print(book_dict)
-        btitle=book_dict.get('btitle')
-        bpub_date=book_dict.get('bpub_date')
-        # Tooo 校验参数
+        book_dict=json.loads(request.body)
+
+        # TODO 校验参数
+        #创建序列化器，进行反序列化处理时设置data为请求参数的字典
+        serializer=BookInfoSerializer(data=book_dict)
+        # is_valid() 执行校验（数据的完整性， 数据的合法性，自定义的需求校验）
+        result=serializer.is_valid()
+        '''
+        校验的结果：result
+        校验的错误信息：serializer.errors
+        校验成功后的数据：serializer.validated_data
+        '''
+        if result==False:
+            return JsonResponse({'detail':serializer.errors},status=400)
+        btitle = serializer.validated_data.get('btitle')
+        bpub_date = serializer.validated_data.get('bpub_date')
         #新增数据
         book=BookInfo.objects.create(btitle=btitle,bpub_date=bpub_date)
         #返回结果
