@@ -4,7 +4,7 @@ from django.http import JsonResponse, HttpResponse
 from django.views import View
 
 from .serializers import BookInfoSerializer
-from .models import BookInfo
+from .models import *
 
 '''
 RESTful风格：增加  post
@@ -20,6 +20,14 @@ class BookListView(View):
 
         #序列化多个对象,序列化多个对象时要设置many为True
         serializer=BookInfoSerializer(books,many=True)
+        #一对多的正向查询
+        hero=HeroInfo.objects.first()#first按主键的排序从小到打，last从大到小，get指定取出
+        print(hero.hname)
+        print(hero.get_hgender_display())#获取性别的展示值
+
+        #一对多的反向查询
+        # book=BookInfo.objects.first()
+        # print(book.heroinfo_set.all())
         #序列化多个对象时，serializer.data 为列表，里面元素为字典
         return JsonResponse(serializer.data,safe=False)#如果返回是列表需要设置safe参数为false
 
