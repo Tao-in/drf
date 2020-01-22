@@ -3,6 +3,7 @@ from django.http import JsonResponse, HttpResponse
 from django.views import View
 from rest_framework.exceptions import *
 from rest_framework.generics import GenericAPIView
+from rest_framework.mixins import *
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -42,85 +43,36 @@ GenericAPIView
            
 '''
 
-class BookListView(GenericAPIView):
+class BookListView(GenericAPIView,ListModelMixin,CreateModelMixin):
     serializer_class = BookInfoSerializer
     queryset = BookInfo.objects.all()
     #获取所有的书籍
     def get(self,request):
         # books = BookInfo.objects.all()
-        books=self.get_queryset()
-        #
-        # serializer=BookInfoSerializer(books,many=True)
-        serializer=self.get_serializer(books,many=True)
-        #drf的Response类型可以根据前端的需求（请求头的Accept字段）
-        return Response(serializer.data)
 
+        return self.list(request)
 
 
         # 新增一本书籍
     def post(self,request):
-        #获取参数
-        book_dict=request.data
-        # book_dict=json.loads(request.body)
-        #创建序列化器，进行反序列化处理时设置data为请求参数的字典
-        serializer=self.get_serializer(data=book_dict)
-        # serializer=BookInfoSerializer(data=book_dict)
-        # is_valid() 执行校验（数据的完整性， 数据的合法性，自定义的需求校验）
-        result=serializer.is_valid(raise_exception=True)
-        '''
-        校验的结果：result
-        校验的错误信息：serializer.errors
-        校验成功后的数据：serializer.validated_data
-        # '''
-        # if result==False:
-        #     return JsonResponse({'detail':serializer.errors},status=400)
-        #新增数据
-        book=serializer.save()
-        return Response(serializer.data,status=201)
+
+        return self.create(request)
 
 
 
-
-class BookView(GenericAPIView):
+class BookView(GenericAPIView,RetrieveModelMixin,UpdateModelMixin,
+               DestroyModelMixin):
     serializer_class = BookInfoSerializer
     queryset = BookInfo.objects.all()
     #获取指定的书籍
     def get(self,request,pk):
-        try:
-            book=self.get_object()
-            #GenericAPIView类中self.get_objects()
-            # 返回视图的指定模型对象
-            #self.get_object()只能取路径传参中的参数
-#通过查询集的model获取模型类
-        except self.queryset.model.DoesNotExist:
-            raise NotFound()
-            # return JsonResponse({'detail':'book not exist'},status=404)
-        serializer=self.get_serializer(book)
-        return Response(serializer.data,status=201)
+
+        return self.retrieve(request)
     #修改指定的书籍
     def put(self,request,pk):
-        #获取书籍
-        # book_dict=json.loads(request.body)
-        book_dict=request.data
 
-        #查询书籍
-        try:
-            book=self.get_object()
-        except self.queryset.model.DoesNotExist:
-            raise NotFound()
-            # return JsonResponse({'detail':'book not exist'},status=404)
-        serializer=self.get_serializer(book,data=book_dict)
-        result=serializer.is_valid(raise_exception=True)
-        # if  result==False:
-        #     return JsonResponse({'errno':'参数错误'},status=400)
-        book=serializer.save()
-        return Response(serializer.data,status=201)
-    #删除指定的书籍
+        return self.update(request) #删除指定的书籍
     def delete(self,request,pk):
         #查询指定的书籍
-        try:
-            book=self.get_object()
-        except self.queryset.model.DoesNotExist:
-            return JsonResponse({'detail':'书籍不存在'},status=404)
-        book.delete()
-        return HttpResponse(status=204)
+
+        return self.destroy(request)
