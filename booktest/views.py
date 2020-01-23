@@ -2,7 +2,7 @@ import json
 from django.http import JsonResponse, HttpResponse
 from django.views import View
 from rest_framework.exceptions import *
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import *
 from rest_framework.mixins import *
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -43,36 +43,16 @@ GenericAPIView
            
 '''
 
-class BookListView(GenericAPIView,ListModelMixin,CreateModelMixin):
+class BookListView(ListCreateAPIView):
+#ListCreateAPIView继承了ListModelMixin和CreateModelMixin两个扩展类
     serializer_class = BookInfoSerializer
     queryset = BookInfo.objects.all()
-    #获取所有的书籍
-    def get(self,request):
-        # books = BookInfo.objects.all()
 
-        return self.list(request)
+class BookView(RetrieveUpdateDestroyAPIView):
+# RetrieveUpdateDestroyAPIView继承了
+# RetrieveModelMixin,
+# UpdateModelMixin,
+# DestroyModelMixin
 
-
-        # 新增一本书籍
-    def post(self,request):
-
-        return self.create(request)
-
-
-
-class BookView(GenericAPIView,RetrieveModelMixin,UpdateModelMixin,
-               DestroyModelMixin):
     serializer_class = BookInfoSerializer
     queryset = BookInfo.objects.all()
-    #获取指定的书籍
-    def get(self,request,pk):
-
-        return self.retrieve(request)
-    #修改指定的书籍
-    def put(self,request,pk):
-
-        return self.update(request) #删除指定的书籍
-    def delete(self,request,pk):
-        #查询指定的书籍
-
-        return self.destroy(request)
