@@ -52,6 +52,11 @@ class BookListView(ListCreateAPIView):
             return BookInfoGetSerializer
         # super() 函数是用于调用父类(超类)的一个方法
         return super().get_serializer_class()
+    def get_queryset(self):
+        if self.request.mothod=='GET':
+            return self.queryset[:3]
+        return super().get_queryset()
+
 
 
 class BookView(RetrieveUpdateDestroyAPIView):
