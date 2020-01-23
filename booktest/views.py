@@ -45,8 +45,14 @@ GenericAPIView
 
 class BookListView(ListCreateAPIView):
 #ListCreateAPIView继承了ListModelMixin和CreateModelMixin两个扩展类
-    serializer_class = BookInfoSerializer
-    queryset = BookInfo.objects.all()
+    serializer_class = BookInfoSerializer#指定该视图使用的序列化器类
+    queryset = BookInfo.objects.all()#指定该视图使用的查询集
+    def get_serializer_class(self):#自定义序列化器类
+        if self.request.method=='GET':#如果请求方法为get
+            return BookInfoGetSerializer
+        # super() 函数是用于调用父类(超类)的一个方法
+        return super().get_serializer_class()
+
 
 class BookView(RetrieveUpdateDestroyAPIView):
 # RetrieveUpdateDestroyAPIView继承了

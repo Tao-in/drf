@@ -6,7 +6,10 @@ from .models import BookInfo
 Serializer,可以基于模型类字段自动生成序列化字段，里面还包含create()和update()
 方法的实现。
 '''
-
+class BookInfoGetSerializer(ModelSerializer):
+    class Meta:
+        model=BookInfo#model指定序列化器的模型类
+        fields=['id','btitle']
 
 class BookInfoSerializer(ModelSerializer):
     class Meta:
